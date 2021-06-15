@@ -26,6 +26,7 @@ const runApp = () => {
       else if (res.action == "View all Emplyees By Deparment") {showEmpsByDep()}
       else if (res.action == "Add Employee") { addEmployee() }
       else if (res.action == "Add Role") { addRole() }
+      else if (res.action == "Add Department") { addDep() }
     })
     .catch(err => console.log(err))
 
@@ -130,6 +131,21 @@ const addRole = () => {
                 VALUES ("${res.roleTitle}", ${res.salary}, ${parseInt(res.depId)})`, (err, res2) => {
       if (err) { console.log(err) }
       console.log('new role added!')
+      runApp()
+    })
+  })
+}
+const addDep = () => {
+  prompt({
+    name: 'depName',
+    type: 'input',
+    message: 'Enter a name for the new department:'
+  })
+  .then(res=>{
+    db.query(`INSERT INTO department (name)
+                VALUES ("${res.depName}")`, (err, res2) => {
+      if (err) { console.log(err) }
+      console.log('new department added!')
       runApp()
     })
   })
