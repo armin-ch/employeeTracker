@@ -25,6 +25,7 @@ const runApp = () => {
       else if (res.action == "View All Employees By Role") {showEmpsByRole()}
       else if (res.action == "View all Emplyees By Deparment") {showEmpsByDep()}
       else if (res.action == "Add Employee") { addEmployee() }
+      else if (res.action == "Add Role") { addRole() }
     })
     .catch(err => console.log(err))
 
@@ -33,6 +34,7 @@ const showAllEmployees = () =>{
   db.query('SELECT e.id, e.first_name, e.last_name, role.title, department.name AS department, role.salary, m.last_name AS manager FROM employee e LEFT JOIN employee m ON e.manager_id = m.id INNER JOIN role ON e.role_id = role.id INNER JOIN department ON role.department_id = department.id', (err, employees) => {
     if (err) { console.log(err) }
     console.table(employees)
+    runApp()
   })
 }
 const showEmpsByRole = () => {
@@ -49,6 +51,7 @@ const showEmpsByRole = () => {
     .then(res=>{
       db.query(`SELECT e.id AS ID, e.first_name AS 'First Name', e.last_name AS 'Last Name', role.title AS Title, department.name AS Department, role.salary AS Salary, m.last_name AS Manager FROM employee e LEFT JOIN employee m ON e.manager_id = m.id INNER JOIN role ON e.role_id = role.id INNER JOIN department ON role.department_id = department.id WHERE role.title = '${res.role}'`, (error, employees)=>{
         console.table(employees)
+        runApp()
       })
     })
 })
@@ -67,6 +70,7 @@ const showEmpsByDep = () => {
     .then(res => {
       db.query(`SELECT e.id AS ID, e.first_name AS 'First Name', e.last_name AS 'Last Name', role.title AS Title, department.name AS Department, role.salary AS Salary, m.last_name AS Manager FROM employee e LEFT JOIN employee m ON e.manager_id = m.id INNER JOIN role ON e.role_id = role.id INNER JOIN department ON role.department_id = department.id WHERE department.name = '${res.dep}'`, (error, employees) => {
         console.table(employees)
+        runApp()
         })
       })
   })
@@ -101,6 +105,33 @@ const addEmployee = () =>{
                   console.log('new employee added!')
                   runApp()
                 })
+  })
+}
+const addRole = () => {
+  prompt([
+    {
+      name: 'roleTitle',
+      type: "input",
+      message: 'Enter the title for the new role:'
+    },
+    {
+      name: 'salary',
+      type: "input",
+      message: 'Enter the salary for the new role:'
+    },
+    {
+      name: 'depId',
+      type: "input",
+      message: 'Enter the department ID for the new role:'
+    }
+  ])
+  .then(res=>{
+    db.query(`INSERT INTO role (title, salary, department_id)
+                VALUES ("${res.roleTitle}", ${res.salary}, ${parseInt(res.depId)})`, (err, res2) => {
+      if (err) { console.log(err) }
+      console.log('new role added!')
+      runApp()
+    })
   })
 }
 runApp()
